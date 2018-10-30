@@ -16,7 +16,8 @@ from numpy import multiply as mul_matrix
 #from sklearn.metrics import confusion_matrix
 
 class Model:
-    def __init__(self, reg_coeff):
+    def __init__(self, regressor, reg_coeff):
+        self.regressor = regressor
         self.reg_coeff = reg_coeff
 
     def predict(self, test_values):
@@ -25,16 +26,29 @@ class Model:
             Returns : list of predictions
             one extra parameter in reg_coeff list of linear shift
         """
-
         predictions = []
         for x in test_values:
             predictions.append(mul_matrix(self.reg_coeff, [x, 1]).sum())
 
         return predictions
 
-    def accuracy(self, predictions, expectations):
-        n = min([len(predictions), len(expectations)])
-        return 1-sum([abs(p[i]-e[i])/e[i] for i in range(n) if e[i] != 0])/n
+    def accuracy(self, predictions = None, expectations = None):
+
+        if not predictions or not expectations :
+            #user wants to get accuracy based on test data
+
+            train_data = self.regressor.train
+            predictions = self.predict(train_data["x"])
+            expectations = list(train_data["y"])
+
+        n = len(min([predictions, expectations], key = len))   # if predictions and expectations are different in length
+        p, e = predictions, expectations
+        return 1-sum(
+            [
+                abs(p[i]-e[i])/e[i]
+                for i in range(n)
+                if e[i] != 0]
+        )/n
 
 
 
@@ -53,7 +67,6 @@ class LinearRegressor:
             "default: plotting the given dataframe"
             pairplot(self.data_set)
         else:
-            "Plot each variable against every other variable."
             pairplot(data)
         plt.show()
 
@@ -70,18 +83,20 @@ class LinearRegressor:
         sum_YY = mul_matrix(Y, Y).sum()
         sum_XY = mul_matrix(X, Y).sum()
 
-        # y = mx + c is the regression line.
         m = (n*sum_XY - sum_X*sum_Y)/(n*sum_XX - sum_X**2)
         c = (sum_Y - m*sum_X)/n
 
-        self.model = Model([m, c])
+        self.model = Model(self, [m, c])    #Model has reg_coeff in decreasing oreder of power.
+        print("m, c", m, c)
         return self.model
 
 
-regressor = LinearRegressor([list(range(7)), [1, 0, 2, 3, 4, 6, 5]])
+if __name__ == "__main__":
+    data_set = [list(range(7)), [1, 0, 2, 3, 4, 6, 5]]
+    regressor = LinearRegressor(data_set)
 
-model = regressor.fit()
-d = list(range(3))
-p = model.predict(d)
-e = d
-print("Accuracy of model : ", model.accuracy(p, e))
+    model = regressor.fit()
+
+    #model.predict([1,2,3,4])
+
+    print("Average Accuracy of model : ", model.accuracy())

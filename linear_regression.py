@@ -53,6 +53,7 @@ class LinearRegressor:
             "default: plotting the given dataframe"
             pairplot(self.data_set)
         else:
+            "Plot each variable against every other variable."
             pairplot(data)
         plt.show()
 
@@ -69,6 +70,7 @@ class LinearRegressor:
         sum_YY = mul_matrix(Y, Y).sum()
         sum_XY = mul_matrix(X, Y).sum()
 
+        # y = mx + c is the regression line.
         m = (n*sum_XY - sum_X*sum_Y)/(n*sum_XX - sum_X**2)
         c = (sum_Y - m*sum_X)/n
 

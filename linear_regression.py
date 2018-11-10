@@ -13,11 +13,12 @@ from pandas import DataFrame
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split
 from numpy import multiply as mul_matrix
-#from sklearn.metrics import confusion_matrix
+# from sklearn.metrics import confusion_matrix
+
 
 class Model:
-    def __init__(self, regressor, reg_coeff):
-        self.regressor = regressor
+    def __init__(self, l_regressor, reg_coeff):
+        self.regressor = l_regressor
         self.reg_coeff = reg_coeff
 
     def predict(self, test_values):
@@ -27,21 +28,20 @@ class Model:
             one extra parameter in reg_coeff list of linear shift
         """
         predictions = []
-        for x in test_values:
-            predictions.append(mul_matrix(self.reg_coeff, [x, 1]).sum())
+        for ele in test_values:
+            predictions.append(mul_matrix(self.reg_coeff, [ele, 1]).sum())
 
         return predictions
 
-    def accuracy(self, predictions = None, expectations = None):
+    def accuracy(self, predictions=None, expectations=None):
 
-        if not predictions or not expectations :
-            #user wants to get accuracy based on test data
-
+        if not predictions or not expectations:
+            # user wants to get accuracy based on test data
             train_data = self.regressor.train
             predictions = self.predict(train_data["x"])
             expectations = list(train_data["y"])
 
-        n = len(min([predictions, expectations], key = len))   # if predictions and expectations are different in length
+        n = len(min([predictions, expectations], key=len))   # if predictions and expectations are different in length
         p, e = predictions, expectations
         return 1-sum(
             [
@@ -49,7 +49,6 @@ class Model:
                 for i in range(n)
                 if e[i] != 0]
         )/n
-
 
 
 class LinearRegressor:
@@ -60,7 +59,7 @@ class LinearRegressor:
                 'y': data_set[1]
             }
         )
-        self.train, self.test = train_test_split(self.data_set, test_size=test_size)
+        self.train, self.test = train_test_split(self.data_set, test_size=test_size, shuffle=False)
 
     def plot(self, data=None):
         if data is None:
@@ -70,8 +69,9 @@ class LinearRegressor:
             pairplot(data)
         plt.show()
 
+
     def fit(self):
-        # X = mX + c
+        # Y = mX + c
 
         # getting variables ready :
         X = self.train['x']    # capital indicates : train data(larger one)
@@ -86,17 +86,20 @@ class LinearRegressor:
         m = (n*sum_XY - sum_X*sum_Y)/(n*sum_XX - sum_X**2)
         c = (sum_Y - m*sum_X)/n
 
-        self.model = Model(self, [m, c])    #Model has reg_coeff in decreasing oreder of power.
-        print("m, c", m, c)
+        self.model = Model(self, [m, c])    # model has reg_coeff in decreasing order of power.
         return self.model
 
 
 if __name__ == "__main__":
-    data_set = [list(range(7)), [1, 0, 2, 3, 4, 6, 5]]
-    regressor = LinearRegressor(data_set)
+    x = [0, 1, 3, 3, 4, 5, 6, 7, 8, 9]          # line y=x with some jagginess.
+    y = list(range(10))
+    dataset = [x, y]
+    regressor = LinearRegressor(dataset)
 
     model = regressor.fit()
 
-    #model.predict([1,2,3,4])
+    test_data = range(10)
 
-    print("Average Accuracy of model : ", model.accuracy())
+    prediction = model.predict(test_data)
+
+    print("Accuracy of model : ", model.accuracy(predictions=prediction, expectations=test_data))

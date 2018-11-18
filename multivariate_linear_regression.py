@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split
 from numpy import array
-
+from numpy import isnan
 
 class LinearRegressor:
     def __init__(self, dataset, error_limit=10**(-10)):
@@ -50,6 +50,9 @@ class LinearRegressor:
 
     def fit(self, α=0.1, max_epochs=1000):
         # α : learning rate
+        
+        "Reinitialise if user wants to retrain with another learning rate."
+        self.__init__(self.dataset, self.error_limit)
         epoch_number = 0
         while True:
             if self.is_convergent(): break
@@ -59,13 +62,15 @@ class LinearRegressor:
                 stop = 1 if input("Do you want to stop training (y/*)??").lower() == 'y' else 0
                 if stop:
                     print("Training aborted.")
-                    break
-            temp = []
-            for j in range(len(self.θ)):
-                temp.append(self.θ[j] - α * self.Jθ_derivative(j))
-            self.θ = array(temp)
+                    return 0
+                    
+            self.θ = array([self.θ[j] - α * self.Jθ_derivative(j) for j in range(len(self.θ))])
+            if isnan(self.θ).any():
+                print("Something bad happened while training.\n Try fitting with new learning rate.")
+                return 0
             epoch_number += 1
         print("Training completed successfully. Required {} epochs".format(epoch_number))
+        return 1
 
     def predict(self, x=None):
         error = False

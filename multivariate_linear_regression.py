@@ -19,14 +19,20 @@ class LinearRegressor:
         self.test_y = [row[-1] for row in self.test_data]
 
         self.n = len(self.x[0])  # n is # features.
-        self.m = len(self.x)
+        self.m = len(self.x)     # m is # rows in train data
 
         self.θ = array([0 for i in range(self.n)])
 
     def hθ(self, x):
+        """
+            returns the predictions based on x.
+        """
         return self.θ.dot(x)
 
     def Jθ(self):  # input should be regression coefficient
+        """
+            Jθ is the cost function.
+        """
         return (1 / (2 * self.m)) * \
                sum(
                    [(self.hθ(self.x[i]) - self.y[i]) ** 2

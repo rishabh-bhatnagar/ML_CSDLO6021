@@ -88,11 +88,35 @@ class LinearRegressor:
 
         self.model = Model(self, [m, c])    # model has reg_coeff in decreasing order of power.
         return self.model
-
+ds=[
+[ 0.2 , 
+1.4125962183982588], 
+[ 0.3 , 
+1.525140738571035], 
+[ 0.4 , 
+1.5003552722572735], 
+[ 0.5 , 
+1.7671426063362574], 
+[ 0.6 , 
+1.9775364878507418], 
+[ 0.7 , 
+2.1512670519422272], 
+[ 0.8 , 
+2.299235804985571], 
+[ 0.9 , 
+2.4281055432164464], 
+[ 1.0 , 
+2.542247763846916]
+]
 
 if __name__ == "__main__":
     x = [0, 1, 3, 3, 4, 5, 6, 7, 8, 9]          # line y=x with some jagginess.
     y = list(range(10))
+    
+    x = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    y = [0.55482, 1.13541, 1.50036, 1.76714, 1.977536, 2.151267, 2.2992358, 2.4281055, 2.54224776]
+    plt.scatter(*zip(*ds))
+    plt.show()
     dataset = [x, y]
     regressor = LinearRegressor(dataset)
 

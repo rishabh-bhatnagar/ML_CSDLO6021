@@ -9,6 +9,7 @@ class Percepteron:
         self.y = array(dataset[-1])
         self.n =  
         w = [0 for i in range(n)]
+
 Percepteron(
     [
         [1, 1, 1, 1, 1],
